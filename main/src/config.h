@@ -1,3 +1,4 @@
+#pragma once
 #include <WString.h>
 
 const String NODE_TOKEN = "starburst_stream";
