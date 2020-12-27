@@ -1,7 +1,11 @@
 #pragma once
 #include <ArduinoJson.h>
 #include "../config.h"
-#define COMMON_DEV_LIMIT 1000
+#define COMMON_DEV_LIMIT 50
+#define MAX_CONFIG_CHAR_SIZE 1<<15
+
+typedef void (*FuncPtr)();
+
 struct Device
 {
     char *hid;
@@ -23,17 +27,18 @@ enum CMP_OP
 struct OutDevAction
 {
     char *hid;
-    void (*true_action)();
-    void (*false_action)();
-}
+    FuncPtr trueAction;
+    FuncPtr falseAction;
+};
 
 struct CtrlUnit
 {
     int idevSerial;
     CMP_OP operand;
     float val;
-    void (*solActions)()[COMMON_DEV_LIMIT];
-}
+    int solCnt;
+    FuncPtr solActions[COMMON_DEV_LIMIT];
+};
 
 class DeviceHandler
 {
@@ -49,3 +54,6 @@ class DeviceHandler
     // setup watches for all devices
     DeviceHandler();
 };
+
+void ParseTextCfg(const String &str);
+void ListConfig();

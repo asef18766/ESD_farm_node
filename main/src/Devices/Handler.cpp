@@ -1,33 +1,20 @@
 #include "./device.h"
 
 DeviceHandler *DeviceHandler::instance = nullptr; 
-void BH1750handler(StaticJsonDocument<JSON_BUFFER_SIZE> &data);
+extern int TARGET_DEVICE_COUNT;
+extern Device TARGET_DEVICE[];
 
-// [NOTE] read device shall come first
-// [NOTE] write device shall implement an interface to obtain work units
-Device TARGET_DEVICE[] = {
-    {"a0dc72230878a4cfc03cb1da52ad8e", 0, true, BH1750handler},
-    {"cb4d49748f0dc9fc17a49b7b441ff8", 0, true, BH1750handler},
-    {"f86e193224fee588ddb5036ea0548d", 0, true, BH1750handler},
-    {"e6e81072d2289b4e062b4b95a9fcbe", 0, true, BH1750handler}
-};
-int TARGET_DEVICE_COUNT = 4;
-
-void BH1750handler(StaticJsonDocument<JSON_BUFFER_SIZE> &data)
-{
-    data["amount"] = 487.63;
-}
+extern void ParseTextCfg(const String &str);
 
 DeviceHandler::DeviceHandler() {}
-
 DeviceHandler* DeviceHandler::GetInstance()
 {
-    Serial.println("[trying GetInstance]");
+    Serial.println(F("[trying GetInstance]"));
     if(DeviceHandler::instance == nullptr)
     {
         DeviceHandler::instance = new DeviceHandler;
     }
-    Serial.println("[end of GetInstance]");
+    Serial.println(F("[end of GetInstance]"));
     return DeviceHandler::instance;
 }
 void DeviceHandler::SetUpDeviceMap(StaticJsonDocument<JSON_BUFFER_SIZE> &map)
