@@ -76,10 +76,12 @@ cfg = {
     "latest_version":87
 }
 if __name__ == "__main__":
+    # create_config()
     create_register_resp()
+    crea
     # hash = hashlib.md5()
     # hash.update(node_token.encode() + "water pump".encode())
     # print(hash.digest().hex()[2:])
-    print(json.dumps(cfg))
+    # print(json.dumps(cfg))
 
         

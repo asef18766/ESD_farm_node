@@ -1,9 +1,18 @@
 #include "./device.h"
 
 DeviceHandler *DeviceHandler::instance = nullptr; 
+const CMPPtr comp_ops[] = {
+    [](float a, float b){return a > b;},
+    [](float a, float b){return a < b;},
+    [](float a, float b){return a == b;}
+};
+
 extern int TARGET_DEVICE_COUNT;
 extern Device TARGET_DEVICE[];
-
+extern CtrlUnit DevConfig[COMMON_DEV_LIMIT];
+extern int devConfigCnt;
+typedef 
+extern bool CondCheck(int idev, int val, CMPPtr operand);
 extern void ParseTextCfg(const String &str);
 
 DeviceHandler::DeviceHandler() {}
@@ -25,13 +34,47 @@ void DeviceHandler::SetUpDeviceMap(StaticJsonDocument<JSON_BUFFER_SIZE> &map)
         TARGET_DEVICE[i].ex_id = map["device_map"][TARGET_DEVICE[i].hid];
     }
     Serial.println("[Handler End Setting Up Device Map]");
+    Serial.println("[Current device mapping]");
+    for(int i = 0;i != TARGET_DEVICE_COUNT;++i)
+    {
+        Serial.print(TARGET_DEVICE[i].hid);
+        Serial.print(':');
+        Serial.println(TARGET_DEVICE[i].ex_id);
+    }
+    Serial.println("[End of device mapping]");
 }
 
 // the update routine for every tick at serve state
 void DeviceHandler::Tick()
 {
     Serial.println("[Handler Start Tick]");
-    for(int i = 0;i != TARGET_DEVICE_COUNT;++i)
+    int i = 0;
+
+    // obtain input values
+    for(;i != TARGET_DEVICE_COUNT;++i)
+    {
+        if (!TARGET_DEVICE[i].input)
+            break;
+        StaticJsonDocument<JSON_BUFFER_SIZE> dev;
+        TARGET_DEVICE[i].Tick(dev);
+        dev["token"] = NODE_TOKEN;
+        dev["device"] = TARGET_DEVICE[i].ex_id;
+        String de_str;
+        serializeJson(dev, de_str);
+        Serial.println(de_str);
+    }
+    // process condiction
+    for ( int u = 0 ; u != devConfigCnt ; ++u )
+    {
+        if (CondCheck(DevConfig[u].idevSerial, DevConfig[u].val, comp_ops[DevConfig[u].operand]))
+        {
+            for (int j = 0;j != DevConfig[u].solCnt;++j)
+                DevConfig[u].solActions[j]();
+            break;
+        }
+    }
+    // obtain output values
+    for(;i != TARGET_DEVICE_COUNT;++i)
     {
         StaticJsonDocument<JSON_BUFFER_SIZE> dev;
         TARGET_DEVICE[i].Tick(dev);

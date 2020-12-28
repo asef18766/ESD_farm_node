@@ -1,11 +1,11 @@
 #pragma once
 #include <ArduinoJson.h>
 #include "../config.h"
-#define COMMON_DEV_LIMIT 50
+#define COMMON_DEV_LIMIT 30
 #define MAX_CONFIG_CHAR_SIZE 1<<15
 
 typedef void (*FuncPtr)();
-
+typedef bool (*CMPPtr)(float a, float b);
 struct Device
 {
     char *hid;
@@ -19,9 +19,9 @@ struct Device
 
 enum CMP_OP
 {
-    OP_GT,
-    OP_LT,
-    OP_EQ
+    OP_GT = 0,
+    OP_LT = 1,
+    OP_EQ = 2
 };
 
 struct OutDevAction

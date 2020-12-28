@@ -5,8 +5,7 @@ ServeState::ServeState()
 {
     this->StateName = "RunningState";
     this->config = DeviceHandler::GetInstance();
-    Serial.println("create serve state");
-
+    Serial.println("[create serve state]");
 }
 
 void ServeState::OnUpdate(StateHanlder &sh)

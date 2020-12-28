@@ -6,10 +6,10 @@ void BH1750handler(StaticJsonDocument<JSON_BUFFER_SIZE> &data);
 // [NOTE] read device shall come first
 // [NOTE] write device shall implement an interface to obtain work units
 Device TARGET_DEVICE[] = {
-    {"a0dc72230878a4cfc03cb1da52ad8e", 0, true, BH1750handler},
-    {"cb4d49748f0dc9fc17a49b7b441ff8", 0, true, BH1750handler},
-    {"f86e193224fee588ddb5036ea0548d", 0, true, BH1750handler},
-    {"e6e81072d2289b4e062b4b95a9fcbe", 0, true, BH1750handler}
+    {"a0dc72230878a4cfc03cb1da52ad8e", -1, true, BH1750handler},
+    {"cb4d49748f0dc9fc17a49b7b441ff8", -1, true, BH1750handler},
+    {"f86e193224fee588ddb5036ea0548d", -1, true, BH1750handler},
+    {"e6e81072d2289b4e062b4b95a9fcbe", -1, true, BH1750handler}
 };
 int TARGET_DEVICE_COUNT = 4;
 
@@ -50,4 +50,28 @@ FuncPtr GetCtrlFunc(String sHid, bool swCond)
         }
     }
     return nullptr;
+}
+float history_record[COMMON_DEV_LIMIT];
+
+int getRecordIndex(int idev)
+{
+    for (int i = 0; i != TARGET_DEVICE_COUNT; ++i)
+    {
+        if (TARGET_DEVICE[i].ex_id == idev)
+        {
+            return i;
+        }
+    }
+    Serial.println(F("[error while obatain history index]"));
+    return -1;
+}
+
+bool CondCheck(int idev, float val, CMPPtr operand)
+{
+    int idx = getRecordIndex(idev);
+    if (idx == -1)
+    {
+        return false;
+    }
+    return operand(history_record[idx], val);
 }

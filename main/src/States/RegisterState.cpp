@@ -7,18 +7,19 @@ extern const String DEVICE_CONFIG;
 RegisterState::RegisterState()
 {
     this->StateName = "RegisterState";
-    Serial.println("register state created");
+    Serial.println("[register state created]");
+    Serial.println(DEVICE_CONFIG);
 }
 void RegisterState::OnUpdate(StateHanlder &sh)
 {
-    Serial.println("this is Register state");
+    Serial.println("[this is Register state]");
     if(sh.Info != "")
     {
         StaticJsonDocument<JSON_BUFFER_SIZE> doc;
         DeserializationError error = deserializeJson(doc, sh.Info);
         if(error)
         {
-            Serial.println("[error] can not deserialize target");
+            Serial.println("[error: can not deserialize target]");
             Serial.println(error.f_str());
             return;
         }
