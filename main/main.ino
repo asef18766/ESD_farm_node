@@ -1,4 +1,5 @@
 #include "src/States/State.h"
+#define DEFAULT_LED 2
 
 StateHanlder GLOBAL_STATE_HANDLER;
 int SLEEP_TIME = 1000;
@@ -6,7 +7,7 @@ int SLEEP_TIME = 1000;
 // the setup function runs once when you press reset or power the board
 void setup()
 {
-    pinMode(5, OUTPUT);
+    pinMode(DEFAULT_LED, OUTPUT);
     Serial.begin(9600);
     while (!Serial);
     
@@ -16,9 +17,9 @@ void setup()
 
 void loop()
 {
-    digitalWrite(5, HIGH);
+    digitalWrite(DEFAULT_LED, HIGH);
     delay(SLEEP_TIME/2);
-    digitalWrite(5, LOW);
+    digitalWrite(DEFAULT_LED, LOW);
     GLOBAL_STATE_HANDLER.CurrentState->OnUpdate(GLOBAL_STATE_HANDLER);
     delay(SLEEP_TIME/2);
 }
