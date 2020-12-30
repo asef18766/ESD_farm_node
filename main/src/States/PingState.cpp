@@ -11,10 +11,10 @@ PingState::PingState()
 
 void PingState::OnUpdate(StateHanlder &sh)
 {
-    Serial.println("i am ping state");
+    Serial.println("[i am ping state]");
     if(sh.Info == "{\"msg\":\"i am alive\"}")
     {
-        Serial.println("successful connected to server");
+        Serial.println("[successful connected to server]");
         sh.Translate(new RegisterState);
         sh.Info = "";
         return;

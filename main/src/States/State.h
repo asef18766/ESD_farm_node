@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ArduinoJson.h>
+#include "../Devices/Device.h"
 class IState;
 
 #pragma region BasicInterface
@@ -75,5 +76,5 @@ class ServeState : public IState
     void OnUpdate(StateHanlder &sh) override;
     
     private:
-    static void* config;
+    static DeviceHandler* config;
 };

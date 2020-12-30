@@ -53,5 +53,34 @@ def create_register_resp():
     
     print(json.dumps(dev_map, separators=(',', ':')))
 
+cfg = {
+    "cfg":
+    [
+        {
+            "dev_hid":"a0dc72230878a4cfc03cb1da52ad8e",
+            "condition":"gt",
+            "val":8787,
+            "sol":
+            [
+                {
+                    "dev_hid":"839bc5bba6a76514868ed84275839c",
+                    "operate":True
+                },
+                {
+                    "dev_hid":"839bc5bba6a76514868ed84275839c",
+                    "operate":False
+                }
+            ]
+        },
+    ],
+    "latest_version":87
+}
 if __name__ == "__main__":
     create_register_resp()
+    print(json.dumps(cfg))
+    
+    #create_config()
+    # hash = hashlib.md5()
+    # hash.update(node_token.encode() + "water pump".encode())
+    # print(hash.digest().hex()[2:])
+        
