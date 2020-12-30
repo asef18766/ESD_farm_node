@@ -1,6 +1,7 @@
 #include "Device.h"
 CtrlUnit DevConfig[COMMON_DEV_LIMIT];
 int devConfigCnt = 0;
+int devCfgVer = -1;
 
 extern FuncPtr GetCtrlFunc(String sHid, bool swCond);
 extern int GetExIdByHid(const String &sHid);
@@ -72,4 +73,8 @@ void ListConfig()
             Serial.println("[end of executing sol]");
         }
     }
+}
+bool CheckCfgVer(int version)
+{
+    return version > devCfgVer;
 }

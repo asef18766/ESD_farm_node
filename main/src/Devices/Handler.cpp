@@ -11,8 +11,9 @@ extern int TARGET_DEVICE_COUNT;
 extern Device TARGET_DEVICE[];
 extern CtrlUnit DevConfig[COMMON_DEV_LIMIT];
 extern int devConfigCnt;
-typedef 
-extern bool CondCheck(int idev, int val, CMPPtr operand);
+
+extern bool CheckCfgVer(int version);
+extern bool CondCheck(int idev, float val, CMPPtr operand);
 extern void ParseTextCfg(const String &str);
 
 DeviceHandler::DeviceHandler() {}
@@ -85,4 +86,16 @@ void DeviceHandler::Tick()
         Serial.println(de_str);
     }
     Serial.println("[Handler End Tick]");
+}
+void DeviceHandler::CkCfgUpdate(String &str)
+{
+    Serial.println(F("[Start Checking Update]"));
+    StaticJsonDocument<87> doc;
+    deserializeJson(doc, str);
+    if (CheckCfgVer(doc["version"]))
+    {
+        Serial.println(F("[Detected Avaible Update]"));
+        Serial.println(str);
+    }
+    Serial.println(F("[End of Checing Update]"));
 }

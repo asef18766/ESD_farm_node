@@ -47,6 +47,8 @@ class DeviceHandler
     void SetUpDeviceMap(StaticJsonDocument<JSON_BUFFER_SIZE> &map);
     // called for each update routine for both input & output device
     void Tick();
+    // call when receive notification of new config available
+    void CkCfgUpdate(String &str);
 
     private:
     static DeviceHandler* instance;

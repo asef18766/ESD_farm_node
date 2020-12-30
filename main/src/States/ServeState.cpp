@@ -25,6 +25,11 @@ void ServeState::OnUpdate(StateHanlder &sh)
         ListConfig();
         Serial.println(F("[end of config]"));
     }
+    else if (sh.Info[0] == '=')
+    {
+        sh.Info.remove(0, 1);
+        config->CkCfgUpdate(sh.Info);
+    }
     else
     {
         config->Tick();

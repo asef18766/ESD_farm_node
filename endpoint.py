@@ -39,6 +39,32 @@ def dumpOutput(sio:Serial):
             break
         print(res)
 
+
+dev_cfg = {
+    "cfg":
+    [
+        {
+            "dev_hid":"a0dc72230878a4cfc03cb1da52ad8e",
+            "condition":"gt",
+            "val":8787,
+            "sol":
+            [
+                {
+                    "dev_hid":"839bc5bba6a76514868ed84275839c",
+                    "operate":True
+                },
+                {
+                    "dev_hid":"839bc5bba6a76514868ed84275839c",
+                    "operate":False
+                }
+            ]
+        },
+    ],
+    "latest_version":87
+}
+def get_cfg(ver:int)->dict:
+    return dev_cfg
+
 def conn_serial(dev_port:str, baud_rate:int, timeout:int)->Serial:
     sio = serial.Serial(dev_port, baud_rate, timeout=timeout)
 
@@ -55,17 +81,30 @@ def conn_serial(dev_port:str, baud_rate:int, timeout:int)->Serial:
             if res == '{"msg":"are you dead?"}':
                 sio.write('{"msg":"i am alive"}\n'.encode())
                 sio.flush()
+            else:
+                data = json.loads(res)
+                if "version" in data:
+                    sio.write(f"**{json.dumps(get_cfg(data['version']))}\n".encode())
+                    sio.flush()
+                    dumpOutput(sio)
+                    break
+
         elif (res[0] == "[" and res[-1] == "]"):
             if res == '[register state created]':
                 cfg = sio.readline().strip().decode()
                 print(f"**receive cfg:{cfg}**")
                 cfg = json.loads(cfg)
                 dmap = json.dumps(creat_dev_map(cfg), separators=(',', ':'))
-                print(f"send cfg {dmap}")
+                print(f"send dev map {dmap}")
                 sio.write((dmap+"\n").encode())
                 sio.flush()
-                dumpOutput(sio)
-                break
+            
+            elif res == '[End of device mapping]':
+                print(f"send latest cfg version {dev_cfg['latest_version']}")
+                print(f"send {json.dumps({'version':dev_cfg['latest_version']})}")
+                sio.write(f"={json.dumps({'version':dev_cfg['latest_version']})}\n".encode())
+                sio.flush()
+        
     return sio
 
 if __name__ == "__main__":

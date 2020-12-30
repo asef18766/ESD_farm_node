@@ -12,6 +12,8 @@ Device TARGET_DEVICE[] = {
     {"e6e81072d2289b4e062b4b95a9fcbe", -1, true, BH1750handler}
 };
 int TARGET_DEVICE_COUNT = 4;
+float history_record[COMMON_DEV_LIMIT];
+
 
 int GetExIdByHid(const String &sHid)
 {
@@ -24,9 +26,34 @@ int GetExIdByHid(const String &sHid)
     }
     return -1;
 }
+
+// this section is only for testing
+float randfloat()
+{
+    static int32_t x = 0xfaceb00c;
+    x ^= x << 13;
+    x ^= x >> 7;
+    x ^= x << 17;
+    float res;
+    memcpy(&res, &x, 4);
+    return res;
+}
+//end of section
+
+
 void BH1750handler(StaticJsonDocument<JSON_BUFFER_SIZE> &data)
 {
-    data["amount"] = 487.63;
+    //TODO: implement real handler
+    static int idcnt = 0;
+
+    float sampleF = randfloat();
+    if (sampleF < 0)
+        sampleF = -sampleF;
+    
+    data["amount"] =  sampleF;
+    
+    history_record[idcnt] = sampleF;
+    idcnt = (idcnt  + 1) % TARGET_DEVICE_COUNT;
 }
 void OnAct()
 {
@@ -51,7 +78,6 @@ FuncPtr GetCtrlFunc(String sHid, bool swCond)
     }
     return nullptr;
 }
-float history_record[COMMON_DEV_LIMIT];
 
 int getRecordIndex(int idev)
 {
@@ -73,5 +99,14 @@ bool CondCheck(int idev, float val, CMPPtr operand)
     {
         return false;
     }
+
+    Serial.print(F("[Check for device"));
+    Serial.print(idev);
+    Serial.print(F(" of val "));
+    Serial.print(history_record[idx]);
+    Serial.print(F(" compares to "));
+    Serial.print(val);
+    Serial.println("]");
+
     return operand(history_record[idx], val);
 }
